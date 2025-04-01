@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <random>
+#include <string>
 
 class MyRectangle {
 public:
@@ -45,19 +46,29 @@ int main() {
     std::random_device rd;
     std::default_random_engine generator(rd());
     std::uniform_int_distribution<int> distribution(100, screenHeight - 100);
+    std::uniform_int_distribution<int> spawnSide(0, 1);
     InitWindow(screenWidth, screenHeight, "crappyBird");
 
     SetTargetFPS(60);
     int tempEnemyHeight = distribution(generator);
+    bool spawnAtTop = spawnSide(generator);
 
     // Create a MyRectangle instance
     MyRectangle rect(150, 150, 100, 50, GREEN);
     MyRectangle enemy(750, screenHeight - tempEnemyHeight, 50, tempEnemyHeight, RED);
+    MyRectangle scoreHitbox(750, spawnAtTop ? 0 : screenHeight - tempEnemyHeight, 50, tempEnemyHeight, RED);
 
     int minY = 0;
     int maxY = screenHeight;
 
     bool gameOver = false;
+    int score = 0;
+    bool passedEnemy = false;
+    
+    
+    
+    
+    
     Vector2 restartButtonPosition = { screenWidth / 2 - 100, screenHeight / 2 };  // Restart button position
     int restartButtonWidth = 200;
     int restartButtonHeight = 50;
@@ -90,17 +101,26 @@ int main() {
         if (enemy.x <= 0) {
             enemy.move(750, 0, minY, maxY);  // Reset enemy position
             enemy.height = distribution(generator);
-            enemy.y = screenHeight - enemy.height;
+            spawnAtTop = spawnSide(generator); // Re-randomize spawn location
+            enemy.y = spawnAtTop ? 0 : screenHeight - enemy.height;
+
+            // Reset hitbox position
+            scoreHitbox.x = enemy.x + enemy.width + 10;
+            passedEnemy = false;  // Allow scoring again for new enemy
+
+            
         } else {
             enemy.move(-10, 0, minY, maxY);  // Move enemy left
+            scoreHitbox.move(-10, 0, minY, maxY);
         }
 
-        if (IsKeyPressed(KEY_UP)) {
-            rect.move(0, -100, minY, maxY);  // Move the rectangle 10 units up
+        if (IsKeyPressed(KEY_SPACE)) {
+            rect.move(0, -100, minY, maxY);
+            
         }
         
         
-
+        // gravity, only applied to player obviously
         rect.move(0, 3, minY, maxY);
 
         }
@@ -109,6 +129,14 @@ int main() {
             gameOver = true;            
         }
 
+        // Score logic: If player passes hitbox, increment score
+        if (!passedEnemy && rect.x > scoreHitbox.x + scoreHitbox.width) {
+            score++;
+            passedEnemy = true;  // Prevent double counting
+        }
+
+        //scoreboard
+        DrawText(("Score: " + std::to_string(score)).c_str(), 10, 10, 20, BLACK);
         
         EndDrawing();
     }
