@@ -89,6 +89,7 @@ int main() {
                     // Reset game state and positions
                     rect = MyRectangle(150, 150, 100, 50, GREEN);  // Reset player position
                     enemy = MyRectangle(750, screenHeight - tempEnemyHeight, 50, tempEnemyHeight, RED);  // Reset enemy position
+                    score = 0;
                     gameOver = false;  // Reset game over state
                 }
             }
@@ -116,7 +117,7 @@ int main() {
 
         if (IsKeyPressed(KEY_SPACE)) {
             rect.move(0, -100, minY, maxY);
-            
+        
         }
         
         
