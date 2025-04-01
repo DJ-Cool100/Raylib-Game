@@ -45,7 +45,7 @@ int main() {
     std::random_device rd;
     std::default_random_engine generator(rd());
     std::uniform_int_distribution<int> distribution(100, screenHeight - 100);
-    InitWindow(screenWidth, screenHeight, "Shitty Bird");
+    InitWindow(screenWidth, screenHeight, "crappyBird");
 
     SetTargetFPS(60);
     int tempEnemyHeight = distribution(generator);
